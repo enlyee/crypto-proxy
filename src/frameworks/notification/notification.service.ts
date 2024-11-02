@@ -1,18 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { SenderService } from '../sender/sender.service';
-import { ConfigService } from '@nestjs/config';
+import { NotificationFactory } from './notification.factory';
+import { Notification } from '../../core/entity/alert.entity';
+import { CryptoService } from '../crypto/crypto.service';
+import { CreateNotificationDto } from '../../core/dto/alert/input/create.notification.dto';
 
 @Injectable()
 export class NotificationService {
   constructor(
-    private readonly configService: ConfigService,
-    private readonly senderService: SenderService,
+    private readonly notificationFactory: NotificationFactory,
+    private readonly cryptoService: CryptoService,
   ) {}
 
-  async createNotification() {
-    //create
+  async createNotification(
+    dto: CreateNotificationDto,
+    userId: string,
+  ): Promise<Notification> {
+    const totalBalance = await this.cryptoService.getWalletBalance(dto.to);
+    const depositSize = await this.cryptoService.getTransactionValue(
+      dto.value,
+      dto.chainId,
+      dto.contract,
+    );
+    const hash = dto.hash;
 
-    const endpoint = this.configService.getOrThrow<string>('endpoint');
-    this.senderService.postByLink({}, endpoint);
+    return this.notificationFactory.createNotification(
+      dto,
+      totalBalance,
+      depositSize.valueUSD,
+      depositSize.valueAmount,
+      depositSize.name,
+      hash,
+      userId,
+    );
   }
 }

@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
+import { CryptoService } from './crypto.service';
+import { CryptoEvmStrategy } from './strategy/evm.strategy';
 
 @Module({
-  imports: [HttpModule],
+  providers: [CryptoService, CryptoEvmStrategy],
+  exports: [CryptoService, CryptoEvmStrategy],
 })
-export class SenderModule {}
+export class CryptoModule {}

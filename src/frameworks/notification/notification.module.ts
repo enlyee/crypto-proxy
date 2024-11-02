@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { SenderService } from '../sender/sender.service';
-import { NotificationFactory } from './notification.factory';
 import { NotificationService } from './notification.service';
+import { CryptoModule } from '../crypto/crypto.module';
+import { NotificationFactory } from './notification.factory';
 
 @Module({
-  providers: [SenderService, NotificationFactory],
+  imports: [CryptoModule],
+  providers: [NotificationService, NotificationFactory],
   exports: [NotificationService],
 })
 export class NotificationModule {}
