@@ -1,34 +1,43 @@
-import { AlertInput, MatchedReceipt } from './alert.input';
+import { AlertInput, MatchedReceipt, MatchedTransaction } from './alert.input';
 import { CreateNotificationDto } from '../../core/dto/alert/input/create.notification.dto';
 import { Web3 } from 'web3';
 
 export class AlertAdapter {
-  static transferToDto(entity: AlertInput): CreateNotificationDto {
-    if (entity.matchedReceipts[0].contractAddress.length) {
-      return AlertAdapter.transferToTokenDto(entity);
+  static transferToDto(
+    receipt: MatchedReceipt,
+    trans: MatchedTransaction,
+  ): CreateNotificationDto {
+    if (trans.input != '0x0') {
+      return AlertAdapter.transferToTokenDto(receipt, trans);
     }
-    return AlertAdapter.transferToMainDto(entity);
+    return AlertAdapter.transferToMainDto(receipt, trans);
   }
 
-  private static transferToTokenDto(entity: AlertInput) {
-    const data = AlertAdapter.getTransferredTokens(entity.matchedReceipts[0]);
+  private static transferToTokenDto(
+    receipt: MatchedReceipt,
+    trans: MatchedTransaction,
+  ) {
+    const data = AlertAdapter.getTransferredTokens(receipt);
     return {
-      hash: entity.matchedTransactions[0].hash,
-      chainId: entity.matchedTransactions[0].chainId,
+      hash: trans.hash,
+      chainId: trans.chainId,
       from: data.from as string,
       to: data.to as string,
       value: data.value as string,
-      contract: entity.matchedReceipts[0].contractAddress,
+      contract: trans.to,
     };
   }
 
-  private static transferToMainDto(entity: AlertInput) {
+  private static transferToMainDto(
+    receipt: MatchedReceipt,
+    trans: MatchedTransaction,
+  ) {
     return {
-      hash: entity.matchedTransactions[0].hash,
-      chainId: entity.matchedTransactions[0].chainId,
-      from: entity.matchedTransactions[0].from,
-      to: entity.matchedTransactions[0].to,
-      value: entity.matchedTransactions[0].value,
+      hash: trans.hash,
+      chainId: trans.chainId,
+      from: trans.from,
+      to: trans.to,
+      value: trans.value,
       contract: null,
     };
   }

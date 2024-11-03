@@ -21,15 +21,21 @@ export class AlertUseCase {
     Logger.log('Started!', 'sendNotification');
     const userWallet = await this.userWalletRepository.getByWalletId(dto.to);
     if (!userWallet) {
-      Logger.warn('User doesnt exists!', 'sendNotification');
+      Logger.warn(`User doesnt exists! ${dto.from}`, 'sendNotification');
       return null;
     }
-    if (dto.contract) {
-      const contracts = await this.contractWhiteListRepository.getByContractId(
-        dto.contract,
-      );
-      if (!contracts) return null;
-    }
+    // if (dto.contract) {
+    //   const contracts = await this.contractWhiteListRepository.getByContractId(
+    //     dto.contract,
+    //   );
+    //   if (!contracts) {
+    //     Logger.warn(
+    //       `Contract no in whitelist! ${dto.contract}`,
+    //       'sendNotification',
+    //     );
+    //     return null;
+    //   }
+    // }
     const notification: Notification =
       await this.notificationService.createNotification(dto, userWallet.userId);
     if (!notification) {

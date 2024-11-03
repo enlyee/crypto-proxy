@@ -8,6 +8,6 @@ async function bootstrap() {
   await Moralis.start({
     apiKey: configuration().api.moralis,
   });
-  await app.listen(3000);
+  await app.listen(configuration().port);
 }
 bootstrap();
