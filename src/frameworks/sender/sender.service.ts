@@ -7,7 +7,9 @@ export class SenderService {
 
   async post(body: object, endpoint: string) {
     try {
-      await this.httpService.post(endpoint, body).toPromise();
+      await this.httpService
+        .post(endpoint, { text: JSON.stringify(body) })
+        .toPromise();
       Logger.log(`Sent: ${JSON.stringify(body)}`, 'SenderService');
     } catch (e) {
       console.log(e);
