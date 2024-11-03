@@ -24,18 +24,28 @@ export class AlertUseCase {
       Logger.warn(`User doesnt exists! ${dto.from}`, 'sendNotification');
       return null;
     }
-    // if (dto.contract) {
-    //   const contracts = await this.contractWhiteListRepository.getByContractId(
-    //     dto.contract,
-    //   );
-    //   if (!contracts) {
-    //     Logger.warn(
-    //       `Contract no in whitelist! ${dto.contract}`,
-    //       'sendNotification',
-    //     );
-    //     return null;
-    //   }
-    // }
+    if (dto.contract) {
+      const contracts = await this.contractWhiteListRepository.getByContractId(
+        dto.contract,
+      );
+      if (!contracts) {
+        Logger.warn(
+          `Contract no in whitelist! ${dto.contract}`,
+          'sendNotification',
+        );
+        return null;
+      }
+    }
+
+    // const allWallets = await this.userWalletRepository.getAllWallets();
+    // // let string = '';
+    // // allWallets.map((w) => {
+    // //   const paddedAddress =
+    // //     '0x' + '0'.repeat(42 - w.walletId.length) + w.walletId.slice(2);
+    // //   string += `(tx_logs_topic2 == '${paddedAddress}') || (tx_to == '${w.walletId}') || `;
+    // // });
+    // // console.log(string);
+
     const notification: Notification =
       await this.notificationService.createNotification(dto, userWallet.userId);
     if (!notification) {

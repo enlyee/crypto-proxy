@@ -15,4 +15,8 @@ export class UserWalletConnectionRepository {
       where: { walletId: id },
     });
   }
+
+  async getAllWallets() {
+    return this.userWalletConnectionRepository.find({});
+  }
 }
