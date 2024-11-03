@@ -29,9 +29,7 @@ export class SenderService {
         ${body.time}
         *Total Balance (USD)*
         ${body.totalBalance}`;
-      await this.httpService
-        .post(endpoint, { text: JSON.stringify(body) })
-        .toPromise();
+      await this.httpService.post(endpoint, { text: text }).toPromise();
       /*
       Client just got a new deposit!:
 Client address:
