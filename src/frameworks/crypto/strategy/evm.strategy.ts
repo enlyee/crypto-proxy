@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CryptoStrategy } from '../../../core/abstract/crypto/strategy.abstract';
 import Moralis from 'moralis';
 import { ConfigService } from '@nestjs/config';
+import { ChainContract, ChainName } from '../chainConnections';
 
 @Injectable()
 export class CryptoEvmStrategy implements CryptoStrategy {
@@ -9,10 +10,6 @@ export class CryptoEvmStrategy implements CryptoStrategy {
 
   async getWalletBalanceUSD(walletId: string): Promise<string> {
     try {
-      await Moralis.start({
-        apiKey: this.configService.getOrThrow<string>('api.moralis'),
-      }); //TODO!!!
-
       const response = await Moralis.EvmApi.wallets.getWalletNetWorth({
         excludeSpam: true,
         excludeUnverifiedContracts: true,
@@ -30,13 +27,19 @@ export class CryptoEvmStrategy implements CryptoStrategy {
     chain: string,
     contract: string,
   ): Promise<{ name: string; valueUSD: number; valueAmount: number }> {
+    let isWrap = false;
     if (!contract) {
-      contract = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'; //TODO!!!!!
+      contract = ChainContract[chain];
+      isWrap = true;
     }
     const rate = await this.getTokenPriceAndNameByAddressUSD(contract, chain);
     const valueAmount = parseInt(value) * 10 ** -rate.decimals;
     const valueUSD = valueAmount * rate.price;
-    return { name: rate.name, valueUSD: valueUSD, valueAmount: valueAmount };
+    return {
+      name: isWrap ? ChainName[chain] : rate.name,
+      valueUSD: valueUSD,
+      valueAmount: valueAmount,
+    };
   }
 
   private async getTokenPriceAndNameByAddressUSD(

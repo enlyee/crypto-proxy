@@ -4,28 +4,44 @@ import { Web3 } from 'web3';
 
 export class AlertAdapter {
   static transferToDto(entity: AlertInput): CreateNotificationDto {
+    if (entity.matchedReceipts[0].contractAddress.length) {
+      return AlertAdapter.transferToTokenDto(entity);
+    }
+    return AlertAdapter.transferToMainDto(entity);
+  }
+
+  private static transferToTokenDto(entity: AlertInput) {
     const data = AlertAdapter.getTransferredTokens(entity.matchedReceipts[0]);
     return {
       hash: entity.matchedTransactions[0].hash,
       chainId: entity.matchedTransactions[0].chainId,
-      from: (data.from as string) ?? entity.matchedTransactions[0].from,
-      to: (data.to as string) ?? entity.matchedTransactions[0].to,
-      value: (data.value as string) ?? entity.matchedTransactions[0].value,
-      contract: entity.matchedReceipts[0].contractAddress.length
-        ? entity.matchedReceipts[0].contractAddress
-        : null,
+      from: data.from as string,
+      to: data.to as string,
+      value: data.value as string,
+      contract: entity.matchedReceipts[0].contractAddress,
     };
   }
 
-  static getTransferredTokens(transactionReceipt: MatchedReceipt) {
+  private static transferToMainDto(entity: AlertInput) {
+    return {
+      hash: entity.matchedTransactions[0].hash,
+      chainId: entity.matchedTransactions[0].chainId,
+      from: entity.matchedTransactions[0].from,
+      to: entity.matchedTransactions[0].to,
+      value: entity.matchedTransactions[0].value,
+      contract: null,
+    };
+  }
+
+  private static getTransferredTokens(transactionReceipt: MatchedReceipt) {
     const web3 = new Web3();
     const transferSignature = web3.utils.sha3(
       'Transfer(address,address,uint256)',
     );
 
-    if (transactionReceipt.logs) {
+    if (transactionReceipt?.logs) {
       for (const log of transactionReceipt.logs) {
-        if (log.topics[0] === transferSignature) {
+        if (log?.topics[0] === transferSignature) {
           const tokenAmount = web3.eth.abi.decodeLog(
             [
               {
