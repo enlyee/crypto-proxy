@@ -23,7 +23,7 @@ export class NotificationFactory {
       depositSizeUSD: twoDecimal(depositSizeUSD),
       depositSizeAmount: depositSizeAmount.toString(),
       asset: chainName,
-      network: 'ETH',
+      network: 'ETH', //TODO
       hash: hash,
       assetContract: dto.contract,
       time: new Date().toISOString(),

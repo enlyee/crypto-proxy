@@ -7,7 +7,7 @@ export class AlertAdapter {
     receipt: MatchedReceipt,
     trans: MatchedTransaction,
   ): CreateNotificationDto {
-    if (trans.input != '0x0') {
+    if (trans.input != '0x') {
       return AlertAdapter.transferToTokenDto(receipt, trans);
     }
     return AlertAdapter.transferToMainDto(receipt, trans);
@@ -21,10 +21,10 @@ export class AlertAdapter {
     return {
       hash: trans.hash,
       chainId: trans.chainId,
-      from: data.from as string,
-      to: data.to as string,
+      from: (data.from as string).toLowerCase(),
+      to: (data.to as string).toLowerCase(),
       value: data.value as string,
-      contract: trans.to,
+      contract: trans.to.toLowerCase(),
     };
   }
 
@@ -35,8 +35,8 @@ export class AlertAdapter {
     return {
       hash: trans.hash,
       chainId: trans.chainId,
-      from: trans.from,
-      to: trans.to,
+      from: trans.from.toLowerCase(),
+      to: trans.to.toLowerCase(),
       value: trans.value,
       contract: null,
     };

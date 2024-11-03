@@ -21,7 +21,7 @@ export class AlertUseCase {
     Logger.log('Started!', 'sendNotification');
     const userWallet = await this.userWalletRepository.getByWalletId(dto.to);
     if (!userWallet) {
-      Logger.warn(`User doesnt exists! ${dto.from}`, 'sendNotification');
+      Logger.warn(`User doesnt exists! ${dto.to}`, 'sendNotification');
       return null;
     }
     if (dto.contract) {
@@ -38,13 +38,13 @@ export class AlertUseCase {
     }
 
     // const allWallets = await this.userWalletRepository.getAllWallets();
-    // // let string = '';
-    // // allWallets.map((w) => {
-    // //   const paddedAddress =
-    // //     '0x' + '0'.repeat(42 - w.walletId.length) + w.walletId.slice(2);
-    // //   string += `(tx_logs_topic2 == '${paddedAddress}') || (tx_to == '${w.walletId}') || `;
-    // // });
-    // // console.log(string);
+    // let string = '';
+    // allWallets.map((w) => {
+    //   const paddedAddress =
+    //     '0x' + '0'.repeat(66 - w.walletId.length) + w.walletId.slice(2);
+    //   string += `(tx_logs_topic2 == '${paddedAddress}') || (tx_to == '${w.walletId}') || \n`;
+    // });
+    // console.log(string);
 
     const notification: Notification =
       await this.notificationService.createNotification(dto, userWallet.userId);

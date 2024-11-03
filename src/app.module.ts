@@ -6,6 +6,9 @@ import { AlertUseCaseModule } from './use-cases/alert/alert.use-case.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotificationModule } from './frameworks/notification/notification.module';
 import { CryptoModule } from './frameworks/crypto/crypto.module';
+import { UserModule } from './frameworks/user/user.module';
+import { UserController } from './controllers/user/user.controller';
+import { UserUseCaseModule } from './use-cases/user/user.use-case.module';
 
 @Module({
   imports: [
@@ -20,9 +23,11 @@ import { CryptoModule } from './frameworks/crypto/crypto.module';
       inject: [ConfigService],
     }),
     AlertUseCaseModule,
+    UserUseCaseModule,
     NotificationModule,
     CryptoModule,
+    UserModule,
   ],
-  controllers: [AlertController],
+  controllers: [AlertController, UserController],
 })
 export class AppModule {}

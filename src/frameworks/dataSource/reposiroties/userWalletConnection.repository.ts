@@ -19,4 +19,12 @@ export class UserWalletConnectionRepository {
   async getAllWallets() {
     return this.userWalletConnectionRepository.find({});
   }
+
+  async save(entity: UserWalletConnection) {
+    return this.userWalletConnectionRepository.save(entity);
+  }
+
+  async saveMany(entity: UserWalletConnection[]) {
+    return this.userWalletConnectionRepository.save(entity);
+  }
 }
