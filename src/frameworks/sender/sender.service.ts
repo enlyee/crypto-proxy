@@ -8,27 +8,30 @@ export class SenderService {
 
   async post(body: Notification, endpoint: string) {
     try {
-      const text = `*Client just got a new deposit!:*
-        *Client address:*
-        ${body.toAddress}
-        *Deposit size:*
-        ${body.depositSizeAmount}
-        *Deposit size (USD):*
-        ${body.depositSizeUSD}
-        *Asset:*
-        ${body.asset}
-        *Network:*
-        ${body.network}
-        *Hash:*
-        https://etherscan.io/tx/${body.hash}
-        *Received deposit from:*
-        ${body.fromAddress}
-        *Asset Contract:*
-        ${body.assetContract ?? 'Internal'}
-        *Time:*
-        ${body.time}
-        *Total Balance (USD)*
-        ${body.totalBalance}`;
+      const text = `
+*Client just got a new deposit!:*
+*User ID:*
+${body.userId}
+*Client address:*
+${body.toAddress}
+*Deposit size:*
+${body.depositSizeAmount}
+*Deposit size (USD):*
+${body.depositSizeUSD}
+*Asset:*
+${body.asset}
+*Network:*
+${body.network}
+*Hash:*
+https://etherscan.io/tx/${body.hash}
+*Received deposit from:*
+${body.fromAddress}
+*Asset Contract:*
+${body.assetContract ?? 'Internal'}
+*Time:*
+${body.time}
+*Total Balance (USD)*
+${body.totalBalance}`;
       await this.httpService.post(endpoint, { text: text }).toPromise();
       /*
       Client just got a new deposit!:
