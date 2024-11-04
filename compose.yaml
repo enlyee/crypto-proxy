@@ -7,7 +7,7 @@ services:
     container_name: nest-api
     restart: always
     ports:
-      - '3001:3001'
+      - "${PORT}:${PORT}"
     depends_on:
       - postgres
 
@@ -17,7 +17,7 @@ services:
     container_name: postgres
     restart: always
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     env_file:
       - .env
     volumes:

@@ -15,7 +15,7 @@ export class UserController {
   async createUser(@Body() input: UserInput): Promise<UserWalletConnection> {
     return this.userUseCase.createUser(UserAdapter.transferToDto(input));
   }
-  @ApiResponse({ type: ManyUsersInput })
+  @ApiResponse({ type: [UserWalletConnection] })
   @ApiOperation({ summary: 'Create many Users' })
   @Post('createmany')
   async createManyUsers(

@@ -8,6 +8,6 @@ export class UserInput {
 }
 
 export class ManyUsersInput {
-  @ApiProperty({ nullable: false })
+  @ApiProperty({ nullable: false, type: [UserInput] })
   users: UserInput[];
 }

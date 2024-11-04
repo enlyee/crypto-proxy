@@ -6,6 +6,8 @@ import { ConfigService } from '@nestjs/config';
 import { CreateNotificationDto } from '../../core/dto/alert/input/create.notification.dto';
 import { UserWalletConnectionRepository } from '../../frameworks/dataSource/reposiroties/userWalletConnection.repository';
 import { ContractWhiteListRepository } from '../../frameworks/dataSource/reposiroties/contractWhiteList.repository';
+import { SenderUtil } from '../../frameworks/sender/sender.util';
+import { GetNotificationsPayload } from '../../controllers/alert/alert.payload';
 
 @Injectable()
 export class AlertUseCase {
@@ -37,15 +39,6 @@ export class AlertUseCase {
       }
     }
 
-    // const allWallets = await this.userWalletRepository.getAllWallets();
-    // let string = '';
-    // allWallets.map((w) => {
-    //   const paddedAddress =
-    //     '0x' + '0'.repeat(66 - w.walletId.length) + w.walletId.slice(2);
-    //   string += `(tx_logs_topic2 == '${paddedAddress}') || (tx_to == '${w.walletId}') || \n`;
-    // });
-    // console.log(string);
-
     const notification: Notification =
       await this.notificationService.createNotification(dto, userWallet.userId);
     if (!notification) {
@@ -53,8 +46,61 @@ export class AlertUseCase {
       return;
     }
     const endpoint = this.configService.getOrThrow<string>('endpoint');
-    await this.senderService.post(notification, endpoint);
+
+    let sendBody: object;
+    const outputType = this.configService.get<string>('destinationType');
+    switch (outputType.toLowerCase()) {
+      case 'slack': {
+        sendBody = SenderUtil.transferToSlack(notification);
+        return;
+      }
+      default:
+        sendBody = notification;
+    }
+
+    await this.senderService.post(sendBody, endpoint);
     Logger.log('Sent!', 'sendNotification');
     return notification;
+  }
+
+  async syncUsersWithNode(id: string): Promise<boolean> {
+    if (!id) return false;
+    const allWallets = await this.userWalletRepository.getAllWallets();
+    const stringArr = [];
+    allWallets.map((w) => {
+      const paddedAddress =
+        '0x' + '0'.repeat(66 - w.walletId.length) + w.walletId.slice(2);
+      const element = `(tx_logs_topic2 == '${paddedAddress}') || (tx_to == '${w.walletId}') \n`;
+      stringArr.push(element);
+    });
+    const base64 = btoa(stringArr.join(' || '));
+    const path =
+      'https://api.quicknode.com/quickalerts/rest/v1/notifications/' + id;
+    const key = this.configService.getOrThrow<string>('api.quicknode');
+    await this.senderService.patchWithHeaders(
+      {
+        expression: base64,
+      },
+      { 'x-api-key': key },
+      path,
+    );
+    return true;
+  }
+
+  async getAllNotifications(): Promise<GetNotificationsPayload> {
+    const path = 'https://api.quicknode.com/quickalerts/rest/v1/notifications';
+    const key = this.configService.getOrThrow<string>('api.quicknode');
+    const answer = await this.senderService.getWithHeaders(
+      { 'x-api-key': key },
+      path,
+    );
+    return {
+      data: answer.data.map((d) => {
+        return {
+          id: d.id,
+          name: d.name,
+        };
+      }),
+    };
   }
 }

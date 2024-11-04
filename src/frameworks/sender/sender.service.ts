@@ -1,39 +1,36 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { Notification } from '../../core/entity/alert.entity';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class SenderService {
   constructor(private readonly httpService: HttpService) {}
 
-  async post(body: Notification, endpoint: string) {
+  async post(body: object, endpoint: string) {
     try {
-      const text = `
-*Client just got a new deposit!:*
-*User ID:*
-${body.userId}
-*Client address:*
-${body.toAddress}
-*Deposit size:*
-${body.depositSizeAmount}
-*Deposit size (USD):*
-${body.depositSizeUSD}
-*Asset:*
-${body.asset}
-*Network:*
-${body.network}
-*Hash:*
-https://etherscan.io/tx/${body.hash}
-*Received deposit from:*
-${body.fromAddress}
-*Asset Contract:*
-${body.assetContract ?? 'Internal'}
-*Time:*
-${body.time}
-*Total Balance (USD)*
-${body.totalBalance}`;
-      await this.httpService.post(endpoint, { text: text }).toPromise();
+      this.httpService.post(endpoint, body);
       Logger.log(`Sent: ${JSON.stringify(body)}`, 'SenderService');
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async patchWithHeaders(body: object, headers: object, endpoint: string) {
+    try {
+      this.httpService.patch(endpoint, body, { headers: headers });
+      Logger.log(`Sent: ${JSON.stringify(body)}`, 'SenderService');
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async getWithHeaders(headers: object, endpoint: string) {
+    try {
+      const answer = await firstValueFrom(
+        this.httpService.get(endpoint, { headers: headers }),
+      );
+      Logger.log(`Got ${answer}`, 'SenderService');
+      return answer;
     } catch (e) {
       console.log(e);
     }
