@@ -15,6 +15,7 @@ export class AlertController {
   @ApiOperation({ summary: 'Endpoint for QuickNode alerts' })
   @Post('send')
   async sendNewNotify(@Body() notify: AlertInput): Promise<Notification[]> {
+    console.log(JSON.stringify(notify));
     const pool: CreateNotificationDto[] = [];
     for (let i = 0; i < notify.matchedTransactions.length; i++) {
       const dto = AlertAdapter.transferToDto(
