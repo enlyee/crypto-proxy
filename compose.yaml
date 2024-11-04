@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: nest-api
+    container_name: ${INSTANCE}-nest-api
     restart: always
     ports:
       - "${PORT}:${PORT}"
@@ -14,15 +14,15 @@ services:
 
   postgres:
     image: postgres:latest
-    container_name: postgres
+    container_name: postgres${INSTANCE}
     restart: always
     ports:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     env_file:
       - .env
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres${INSTANCE}:/var/lib/postgresql/data
 
 volumes:
-  postgres:
-    name: nest-docker-db
+  postgres${INSTANCE}:
+    name: ${INSTANCE}-nest-docker-db
