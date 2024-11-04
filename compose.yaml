@@ -22,3 +22,7 @@ services:
       - .env
     volumes:
       - .:/var/lib/postgresql/data
+
+volumes:
+  postgres:
+    name: ${INSTANCE}-nest-docker-db
