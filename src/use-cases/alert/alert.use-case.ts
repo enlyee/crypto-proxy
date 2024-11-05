@@ -52,7 +52,7 @@ export class AlertUseCase {
     switch (outputType.toLowerCase()) {
       case 'slack': {
         sendBody = SenderUtil.transferToSlack(notification);
-        return;
+        break;
       }
       default:
         sendBody = notification;
@@ -64,25 +64,40 @@ export class AlertUseCase {
   }
 
   async syncUsersWithNode(id: string): Promise<boolean> {
-    if (!id) return false;
+    // if (!id) return false;
+    // // const stringArr = [];
+    // // allWallets.map((w) => {
+    // //   const paddedAddress =
+    // //     '0x' + '0'.repeat(66 - w.walletId.length) + w.walletId.slice(2);
+    // //   const element = `(tx_logs_topic2 == '${paddedAddress}') || (tx_to == '${w.walletId}') \n`;
+    // //   stringArr.push(element);
+    // // });
+    //
+    // // const stringArr = [];
+    // // allWallets.map((w) => {
+    // //   const paddedAddress =
+    // //     '0x' + '0'.repeat(66 - w.walletId.length) + w.walletId.slice(2);
+    // //   const element = `(tx_logs_topic2 == '${paddedAddress}') || (tx_to == '${w.walletId}') \n`;
+    // //   stringArr.push(element);
+    // // });
+    //
+    // const base64 = btoa(stringArr.join(' || '));
+    // const path =
+    //   'https://api.quicknode.com/quickalerts/rest/v1/notifications/' + id;
+    // const key = this.configService.getOrThrow<string>('api.quicknode');
+    // await this.senderService.patchWithHeaders(
+    //   {
+    //     expression: base64,
+    //   },
+    //   { 'x-api-key': key },
+    //   path,
+    // );
     const allWallets = await this.userWalletRepository.getAllWallets();
-    const stringArr = [];
-    allWallets.map((w) => {
-      const paddedAddress =
-        '0x' + '0'.repeat(66 - w.walletId.length) + w.walletId.slice(2);
-      const element = `(tx_logs_topic2 == '${paddedAddress}') || (tx_to == '${w.walletId}') \n`;
-      stringArr.push(element);
-    });
-    const base64 = btoa(stringArr.join(' || '));
-    const path =
-      'https://api.quicknode.com/quickalerts/rest/v1/notifications/' + id;
-    const key = this.configService.getOrThrow<string>('api.quicknode');
-    await this.senderService.patchWithHeaders(
-      {
-        expression: base64,
-      },
-      { 'x-api-key': key },
-      path,
+    const walletIds = allWallets.map((w) => w.walletId);
+    console.log(`tx_to in (${walletIds.join(', \n')})`);
+    console.log('\n\n\n\\nn\\n\n');
+    console.log(
+      `tx_logs_topic2 in (${walletIds.map((w) => `'` + '0x' + '0'.repeat(66 - w.length) + w.slice(2) + `'`).join(', \n')})`,
     );
     return true;
   }
