@@ -33,7 +33,8 @@ export class CryptoEvmStrategy implements CryptoStrategy {
       isWrap = true;
     }
     const rate = await this.getTokenPriceAndNameByAddressUSD(contract, chain);
-    const valueAmount = parseInt(value) * 10 ** -rate.decimals;
+    if (!rate) return null;
+    const valueAmount = parseInt(value) * 10 ** -(rate?.decimals ?? 0);
     const valueUSD = valueAmount * rate.price;
     return {
       name: isWrap ? ChainName[chain] : rate.name,

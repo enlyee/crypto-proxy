@@ -22,7 +22,11 @@ export class AlertController {
         notify.matchedReceipts[i],
         notify.matchedTransactions[i],
       );
-      pool.push(dto);
+      if (Array.isArray(dto)) {
+        pool.push(...dto);
+        continue;
+      }
+      pool.push(dto as CreateNotificationDto);
     }
     return Promise.all(
       pool.map(async (p) => await this.alertUseCase.sendNotification(p)),

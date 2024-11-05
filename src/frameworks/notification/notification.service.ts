@@ -16,11 +16,13 @@ export class NotificationService {
     userId: string,
   ): Promise<Notification> {
     const totalBalance = await this.cryptoService.getWalletBalance(dto.to);
+    if (!totalBalance) return null;
     const depositSize = await this.cryptoService.getTransactionValue(
       dto.value,
       dto.chainId,
       dto.contract,
     );
+    if (!depositSize) return null;
     const hash = dto.hash;
 
     return this.notificationFactory.createNotification(

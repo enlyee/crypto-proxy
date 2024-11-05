@@ -6,7 +6,7 @@ export class AlertAdapter {
   static transferToDto(
     receipt: MatchedReceipt,
     trans: MatchedTransaction,
-  ): CreateNotificationDto {
+  ): CreateNotificationDto | CreateNotificationDto[] {
     if (trans.input != '0x') {
       return AlertAdapter.transferToTokenDto(receipt, trans);
     }
@@ -18,14 +18,16 @@ export class AlertAdapter {
     trans: MatchedTransaction,
   ) {
     const data = AlertAdapter.getTransferredTokens(receipt);
-    return {
-      hash: trans.hash,
-      chainId: trans.chainId,
-      from: (data.from as string).toLowerCase(),
-      to: (data.to as string).toLowerCase(),
-      value: data.value as string,
-      contract: trans.to.toLowerCase(),
-    };
+    return data.map((d) => {
+      return {
+        hash: trans.hash,
+        chainId: trans.chainId,
+        from: (d.from as string).toLowerCase(),
+        to: (d.to as string).toLowerCase(),
+        value: d.value as string,
+        contract: trans.to.toLowerCase(),
+      };
+    });
   }
 
   private static transferToMainDto(
@@ -42,44 +44,48 @@ export class AlertAdapter {
     };
   }
 
-  private static getTransferredTokens(transactionReceipt: MatchedReceipt) {
+  private static getTransferredTokens(
+    transactionReceipt: MatchedReceipt,
+  ): TokenOutput[] {
     const web3 = new Web3();
     const transferSignature = web3.utils.sha3(
       'Transfer(address,address,uint256)',
     );
-
+    const arr: TokenOutput[] = [];
     if (transactionReceipt?.logs) {
       for (const log of transactionReceipt.logs) {
         if (log?.topics[0] === transferSignature) {
-          try {
-            const tokenAmount = web3.eth.abi.decodeLog(
-              [
-                {
-                  type: 'address',
-                  name: 'from',
-                  indexed: true,
-                },
-                {
-                  type: 'address',
-                  name: 'to',
-                  indexed: true,
-                },
-                {
-                  type: 'uint256',
-                  name: 'value',
-                },
-              ],
-              log.data,
-              log.topics,
-            );
-            console.log(tokenAmount);
-            return tokenAmount;
-          } catch (e) {
-            console.log(e);
-          }
+          const tokenAmount = web3.eth.abi.decodeLog(
+            [
+              {
+                type: 'address',
+                name: 'from',
+                indexed: true,
+              },
+              {
+                type: 'address',
+                name: 'to',
+                indexed: true,
+              },
+              {
+                type: 'uint256',
+                name: 'value',
+              },
+            ],
+            log.data,
+            log.topics,
+          );
+          console.log(tokenAmount);
+          arr.push(tokenAmount as unknown as TokenOutput);
         }
       }
     }
-    return null;
+    return arr;
   }
 }
+
+type TokenOutput = {
+  to: string;
+  from: string;
+  value: string;
+};
