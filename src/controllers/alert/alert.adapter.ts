@@ -51,28 +51,32 @@ export class AlertAdapter {
     if (transactionReceipt?.logs) {
       for (const log of transactionReceipt.logs) {
         if (log?.topics[0] === transferSignature) {
-          const tokenAmount = web3.eth.abi.decodeLog(
-            [
-              {
-                type: 'address',
-                name: 'from',
-                indexed: true,
-              },
-              {
-                type: 'address',
-                name: 'to',
-                indexed: true,
-              },
-              {
-                type: 'uint256',
-                name: 'value',
-              },
-            ],
-            log.data,
-            log.topics,
-          );
-          console.log(tokenAmount);
-          return tokenAmount;
+          try {
+            const tokenAmount = web3.eth.abi.decodeLog(
+              [
+                {
+                  type: 'address',
+                  name: 'from',
+                  indexed: true,
+                },
+                {
+                  type: 'address',
+                  name: 'to',
+                  indexed: true,
+                },
+                {
+                  type: 'uint256',
+                  name: 'value',
+                },
+              ],
+              log.data,
+              log.topics,
+            );
+            console.log(tokenAmount);
+            return tokenAmount;
+          } catch (e) {
+            console.log(e);
+          }
         }
       }
     }

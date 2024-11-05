@@ -8,8 +8,9 @@ export class SenderService {
 
   async post(body: object, endpoint: string) {
     try {
-      this.httpService.post(endpoint, body);
+      const resp = await firstValueFrom(this.httpService.post(endpoint, body));
       Logger.log(`Sent: ${JSON.stringify(body)}`, 'SenderService');
+      Logger.log(`Response: ${JSON.stringify(resp.data)}`, 'SenderService');
     } catch (e) {
       console.log(e);
     }
