@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@api/tron": "file:.api/apis/tron",
     "@nestjs/axios": "^3.1.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.3.0",
@@ -28,11 +29,13 @@
     "@nestjs/swagger": "^8.0.1",
     "@nestjs/typeorm": "^10.0.2",
     "axios": "^1.7.7",
+    "bs58check": "^4.0.0",
     "ethers": "^6.13.4",
     "moralis": "^2.27.2",
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
+    "tronweb": "^6.0.0",
     "typeorm": "^0.3.20",
     "web3": "^4.14.0"
   },

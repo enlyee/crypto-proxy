@@ -1,4 +1,5 @@
 import { Notification } from '../../core/entity/alert.entity';
+import { NotificationUtil } from '../notification/notification.util';
 
 export class SenderUtil {
   static transferToSlack(body: Notification) {
@@ -17,7 +18,7 @@ ${body.asset}
 *Network:*
 ${body.network}
 *Hash:*
-https://etherscan.io/tx/${body.hash}
+${NotificationUtil.getTransactionLinkByChainEnum(body.network)}${body.hash}
 *Received deposit from:*
 ${body.fromAddress}
 *Asset Contract:*

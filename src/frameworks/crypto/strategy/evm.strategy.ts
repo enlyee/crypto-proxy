@@ -24,8 +24,8 @@ export class CryptoEvmStrategy implements CryptoStrategy {
 
   async getTransactionTokenNameAndValueUSD(
     value: string,
-    chain: string,
     contract: string,
+    chain: string,
   ): Promise<{ name: string; valueUSD: number; valueAmount: number }> {
     let isWrap = false;
     if (!contract) {
@@ -51,7 +51,6 @@ export class CryptoEvmStrategy implements CryptoStrategy {
       // await Moralis.start({
       //   apiKey: this.configService.getOrThrow<string>('api.moralis'),
       // });
-      console.log(tokenWallet, chain);
       const response = await Moralis.EvmApi.token.getTokenPrice({
         chain: chain,
         include: 'percent_change',

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Notification } from '../../core/entity/alert.entity';
 import { CreateNotificationDto } from '../../core/dto/alert/input/create.notification.dto';
+import { ChainEnum } from '../crypto/chainConnections';
 
 @Injectable()
 export class NotificationFactory {
@@ -14,6 +15,7 @@ export class NotificationFactory {
     chainName: string,
     hash: string,
     userId: string,
+    network: ChainEnum,
   ): Notification {
     return {
       userId: userId,
@@ -23,7 +25,7 @@ export class NotificationFactory {
       depositSizeUSD: twoDecimal(depositSizeUSD),
       depositSizeAmount: depositSizeAmount.toString(),
       asset: chainName,
-      network: 'ETH', //TODO
+      network: network,
       hash: hash,
       assetContract: dto.contract,
       time: new Date().toISOString(),

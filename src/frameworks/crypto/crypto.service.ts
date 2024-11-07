@@ -5,24 +5,21 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CryptoService {
-  private readonly cryptoStrategy: CryptoStrategy;
-  constructor(private readonly configService: ConfigService) {
-    this.cryptoStrategy = new CryptoEvmStrategy(this.configService); //TODO factory
-  }
+  constructor(private readonly configService: ConfigService) {}
 
-  async getWalletBalance(walletId: string): Promise<string> {
-    return this.cryptoStrategy.getWalletBalanceUSD(walletId);
+  async getWalletBalance(
+    walletId: string,
+    strategy: CryptoStrategy,
+  ): Promise<string> {
+    return strategy.getWalletBalanceUSD(walletId);
   }
 
   async getTransactionValue(
     value: string,
     chain: string,
     contract: string,
+    strategy: CryptoStrategy,
   ): Promise<{ name: string; valueUSD: number; valueAmount: number }> {
-    return this.cryptoStrategy.getTransactionTokenNameAndValueUSD(
-      value,
-      chain,
-      contract,
-    );
+    return strategy.getTransactionTokenNameAndValueUSD(value, contract, chain);
   }
 }

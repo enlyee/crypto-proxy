@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserWalletConnection } from '../entities/userWalletConnection';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class UserWalletConnectionRepository {
 
   async getByWalletId(id: string): Promise<UserWalletConnection> {
     return this.userWalletConnectionRepository.findOne({
-      where: { walletId: id },
+      where: { walletId: ILike(id) },
     });
   }
 

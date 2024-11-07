@@ -12,7 +12,7 @@ export class SenderService {
       Logger.log(`Sent: ${JSON.stringify(body)}`, 'SenderService');
       Logger.log(`Response: ${JSON.stringify(resp.data)}`, 'SenderService');
     } catch (e) {
-      console.log(e);
+      console.log('ERROR SENDER');
     }
   }
 
@@ -21,7 +21,7 @@ export class SenderService {
       this.httpService.patch(endpoint, body, { headers: headers });
       Logger.log(`Sent: ${JSON.stringify(body)}`, 'SenderService');
     } catch (e) {
-      console.log(e);
+      console.log('ERROR SENDER');
     }
   }
 
@@ -33,7 +33,7 @@ export class SenderService {
       Logger.log(`Got ${answer}`, 'SenderService');
       return answer;
     } catch (e) {
-      console.log(e);
+      console.log('ERROR SENDER');
     }
   }
 }

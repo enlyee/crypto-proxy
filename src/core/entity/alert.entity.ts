@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ChainEnum } from '../../frameworks/crypto/chainConnections';
 
 export class Notification {
   @ApiProperty({ nullable: false })
@@ -14,9 +15,9 @@ export class Notification {
   @ApiProperty({ nullable: false })
   depositSizeAmount: string;
   @ApiProperty({ nullable: false })
-  asset: string; //todo enum
+  asset: string;
   @ApiProperty({ nullable: false })
-  network: string; //todo enum
+  network: ChainEnum;
   @ApiProperty({ nullable: false })
   hash: string;
   @ApiProperty({ nullable: false })
