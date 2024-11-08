@@ -30,8 +30,6 @@ export class CryptoTronStrategy implements CryptoStrategy {
         await this.getTronPriceUsd();
       }
       const trxPrice = this.TRON_PRICE;
-
-      // Получаем цену каждого токена и считаем стоимость
       for (const token of tokenBalances) {
         if (token.tokenId == '_') continue;
         trxBalance +=
@@ -109,7 +107,6 @@ export class CryptoTronStrategy implements CryptoStrategy {
           },
         },
       );
-      console.log(response.data.data[0]);
 
       const tokenData = response.data.data[0];
 
@@ -135,7 +132,6 @@ export class CryptoTronStrategy implements CryptoStrategy {
         },
       },
     );
-    console.log(this.configService.getOrThrow('api.tronscan'));
     const tokenPrice = tokenPriceResponse.data.price_in_usd;
     this.TRON_PRICE = tokenPrice ?? 0;
     return;

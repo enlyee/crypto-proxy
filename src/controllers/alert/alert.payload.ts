@@ -11,3 +11,10 @@ export class GetNotificationsPayload {
   @ApiProperty({ type: [NotificationPayload] })
   data: NotificationPayload[];
 }
+
+export class ExpressionsPayload {
+  @ApiProperty()
+  internal: string;
+  @ApiProperty()
+  token: string;
+}

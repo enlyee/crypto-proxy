@@ -7,7 +7,11 @@ import { CreateNotificationDto } from '../../core/dto/alert/input/create.notific
 import { UserWalletConnectionRepository } from '../../frameworks/dataSource/reposiroties/userWalletConnection.repository';
 import { ContractWhiteListRepository } from '../../frameworks/dataSource/reposiroties/contractWhiteList.repository';
 import { SenderUtil } from '../../frameworks/sender/sender.util';
-import { GetNotificationsPayload } from '../../controllers/alert/alert.payload';
+import {
+  ExpressionsPayload,
+  GetNotificationsPayload,
+} from '../../controllers/alert/alert.payload';
+import { AlertAdapter } from '../../controllers/alert/alert.adapter';
 
 @Injectable()
 export class AlertUseCase {
@@ -65,54 +69,30 @@ export class AlertUseCase {
     return notification;
   }
 
-  async syncUsersWithNode(id: string): Promise<boolean> {
-    // if (!id) return false;
-    // // const stringArr = [];
-    // // allWallets.map((w) => {
-    // //   const paddedAddress =
-    // //     '0x' + '0'.repeat(66 - w.walletId.length) + w.walletId.slice(2);
-    // //   const element = `(tx_logs_topic2 == '${paddedAddress}') || (tx_to == '${w.walletId}') \n`;
-    // //   stringArr.push(element);
-    // // });
-    //
-    // // const stringArr = [];
-    // // allWallets.map((w) => {
-    // //   const paddedAddress =
-    // //     '0x' + '0'.repeat(66 - w.walletId.length) + w.walletId.slice(2);
-    // //   const element = `(tx_logs_topic2 == '${paddedAddress}') || (tx_to == '${w.walletId}') \n`;
-    // //   stringArr.push(element);
-    // // });
-    //
-    // const base64 = btoa(stringArr.join(' || '));
-    // const path =
-    //   'https://api.quicknode.com/quickalerts/rest/v1/notifications/' + id;
-    // const key = this.configService.getOrThrow<string>('api.quicknode');
-    // await this.senderService.patchWithHeaders(
-    //   {
-    //     expression: base64,
-    //   },
-    //   { 'x-api-key': key },
-    //   path,
-    // );
+  async syncUsersWithNode(): Promise<ExpressionsPayload> {
     const allWallets = await this.userWalletRepository.getAllWallets();
-    const walletIds = allWallets.map((w) => `'` + w.walletId + `'`);
-    return true;
-  }
 
-  async getAllNotifications(): Promise<GetNotificationsPayload> {
-    const path = 'https://api.quicknode.com/quickalerts/rest/v1/notifications';
-    const key = this.configService.getOrThrow<string>('api.quicknode');
-    const answer = await this.senderService.getWithHeaders(
-      { 'x-api-key': key },
-      path,
-    );
-    return {
-      data: answer.data.map((d) => {
-        return {
-          id: d.id,
-          name: d.name,
-        };
-      }),
-    };
+    const txWallets = [];
+    const logsWallets = [];
+    allWallets.map((w) => {
+      let wallet: string;
+
+      if (!w.walletId.startsWith('0x')) {
+        wallet = AlertAdapter.tronToEth(w.walletId).toLowerCase();
+      } else {
+        wallet = w.walletId.toLowerCase();
+      }
+
+      const paddedAddress =
+        '0x' + '0'.repeat(66 - wallet.length) + wallet.slice(2);
+      logsWallets.push(paddedAddress);
+      txWallets.push(wallet);
+    });
+
+    const txWalletsString = 'tx_to in (' + txWallets.join(', ') + ')';
+    const logsWalletsString =
+      'tx_logs_topic2 in (' + txWallets.join(', ') + ')';
+
+    return { internal: txWalletsString, token: logsWalletsString };
   }
 }
