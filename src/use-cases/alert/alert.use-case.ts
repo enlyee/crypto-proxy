@@ -91,7 +91,7 @@ export class AlertUseCase {
 
     const txWalletsString = 'tx_to in (' + txWallets.join(', ') + ')';
     const logsWalletsString =
-      'tx_logs_topic2 in (' + txWallets.join(', ') + ')';
+      'tx_logs_topic2 in (' + logsWallets.join(', ') + ')';
 
     return { internal: txWalletsString, token: logsWalletsString };
   }
