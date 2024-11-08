@@ -23,25 +23,23 @@ export class AlertUseCase {
     const valueNum = Number(dto.value);
     if (Number.isNaN(valueNum) || valueNum == 0) return null;
     Logger.log('Started!', 'sendNotification');
-    const userWallet = {
-      userId: 'test',
-    }; /*await this.userWalletRepository.getByWalletId(dto.to);
+    const userWallet = await this.userWalletRepository.getByWalletId(dto.to);
     if (!userWallet) {
       Logger.warn(`User doesnt exists! ${dto.to}`, 'sendNotification');
       return null;
-    }*/
-    // if (dto.contract) {
-    //   const contracts = await this.contractWhiteListRepository.getByContractId(
-    //     dto.contract,
-    //   );
-    //   if (!contracts) {
-    //     Logger.warn(
-    //       `Contract no in whitelist! ${dto.contract}`,
-    //       'sendNotification',
-    //     );
-    //     return null;
-    //   }
-    // }
+    }
+    if (dto.contract) {
+      const contracts = await this.contractWhiteListRepository.getByContractId(
+        dto.contract,
+      );
+      if (!contracts) {
+        Logger.warn(
+          `Contract no in whitelist! ${dto.contract}`,
+          'sendNotification',
+        );
+        return null;
+      }
+    }
 
     const notification: Notification =
       await this.notificationService.createNotification(dto, userWallet.userId);
