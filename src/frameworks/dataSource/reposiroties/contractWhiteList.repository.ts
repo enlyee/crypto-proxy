@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserWalletConnection } from '../entities/userWalletConnection';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ContractWhiteList } from '../entities/contractWhiteList';
 
@@ -13,7 +13,7 @@ export class ContractWhiteListRepository {
 
   async getByContractId(id: string): Promise<ContractWhiteList> {
     return this.contractWhiteListRepository.findOne({
-      where: { contractId: id },
+      where: { contractId: ILike(id) },
     });
   }
 }
