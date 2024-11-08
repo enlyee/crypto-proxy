@@ -16,7 +16,7 @@ export class CryptoTronStrategy implements CryptoStrategy {
         `https://apilist.tronscanapi.com/api/accountv2?address=${walletId}`,
         {
           headers: {
-            'TRON-PRO-API-KEY': 'ac1a4038-a965-4289-bbdb-ce6fcb207202', //TODO
+            'TRON-PRO-API-KEY': this.configService.getOrThrow('api.tronscan'), //TODO
           },
         },
       );
@@ -41,8 +41,8 @@ export class CryptoTronStrategy implements CryptoStrategy {
       }
       const totalValueInUSD = trxBalance * trxPrice;
       return totalValueInUSD.toString();
-    } catch (error) {
-      console.error('Error getting account value');
+    } catch (e) {
+      console.error('Error getting account value', e);
       return null;
     }
   }
@@ -73,10 +73,14 @@ export class CryptoTronStrategy implements CryptoStrategy {
 
         // Получаем цену токена из CoinGecko (или другого источника)
         const tokenPriceResponse = await axios.get(
-          `https://api.coingecko.com/api/v3/simple/price?ids=${tokenInfo.symbol.toLowerCase()}&vs_currencies=usd`,
+          `https://apilist.tronscanapi.com/api/token/price?token=${tokenInfo.symbol.toLowerCase()}`,
+          {
+            headers: {
+              'TRON-PRO-API-KEY': this.configService.getOrThrow('api.tronscan'), //TODO
+            },
+          },
         );
-        const tokenPrice =
-          tokenPriceResponse.data[tokenInfo.symbol.toLowerCase()]?.usd;
+        const tokenPrice = tokenPriceResponse.data.price_in_usd;
 
         if (!tokenPrice) return null;
 
@@ -98,16 +102,23 @@ export class CryptoTronStrategy implements CryptoStrategy {
   ): Promise<{ symbol: string; name: string; decimals: number }> {
     try {
       const response = await axios.get(
-        `https://api.tronscan.org/api/token/${contractAddress}`,
+        `https://apilist.tronscanapi.com/api/contract?contract=${contractAddress}`,
+        {
+          headers: {
+            'TRON-PRO-API-KEY': this.configService.getOrThrow('api.tronscan'), //TODO
+          },
+        },
       );
-      const tokenData = response.data.data;
+      console.log(response.data.data[0]);
+
+      const tokenData = response.data.data[0];
 
       if (!tokenData) return null;
 
       return {
-        symbol: tokenData.symbol,
-        name: tokenData.name,
-        decimals: tokenData.decimals ?? 6,
+        symbol: tokenData.tokenInfo.tokenAbbr,
+        name: tokenData.tokenInfo.tokenName,
+        decimals: tokenData.tokenInfo.tokenDecimal ?? 6,
       };
     } catch (error) {
       console.error('Error getting token info');
@@ -116,10 +127,17 @@ export class CryptoTronStrategy implements CryptoStrategy {
   }
 
   private async getTronPriceUsd() {
-    const trxPriceResponse = await axios.get(
-      'https://api.coingecko.com/api/v3/simple/price?ids=tron&vs_currencies=usd',
+    const tokenPriceResponse = await axios.get(
+      `https://apilist.tronscanapi.com/api/token/price?token=trx`,
+      {
+        headers: {
+          'TRON-PRO-API-KEY': this.configService.getOrThrow('api.tronscan'),
+        },
+      },
     );
-    this.TRON_PRICE = trxPriceResponse?.data?.tron?.usd ?? 0;
+    console.log(this.configService.getOrThrow('api.tronscan'));
+    const tokenPrice = tokenPriceResponse.data.price_in_usd;
+    this.TRON_PRICE = tokenPrice ?? 0;
     return;
   }
 }

@@ -62,7 +62,7 @@ export class AlertAdapter {
         return {
           hash: trans.hash,
           chainId: null,
-          from: d.from,
+          from: trans.from,
           to: d.to as string,
           value: d.value as string,
           contract: trans.to,

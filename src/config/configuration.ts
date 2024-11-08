@@ -5,6 +5,7 @@ export default () => ({
   api: {
     moralis: process.env.MORALIS_KEY,
     quicknode: process.env.QUICKNODE_KEY,
+    tronscan: process.env.TRONSCAN_API,
   },
   endpoint: process.env.ENDPOINT,
   db: {

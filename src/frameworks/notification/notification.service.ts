@@ -54,7 +54,11 @@ export class NotificationService {
   }
 
   private setChain(chainId: string) {
-    if (!chainId) this.chain = ChainEnum.TRX;
+    console.log(chainId);
+    if (!chainId) {
+      this.chain = ChainEnum.TRX;
+      return;
+    }
     this.chain = ChainName[chainId];
   }
 }

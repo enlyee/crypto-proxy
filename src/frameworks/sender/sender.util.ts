@@ -18,7 +18,7 @@ ${body.asset}
 *Network:*
 ${body.network}
 *Hash:*
-${NotificationUtil.getTransactionLinkByChainEnum(body.network)}${body.hash}
+${body.hash}
 *Received deposit from:*
 ${body.fromAddress}
 *Asset Contract:*
