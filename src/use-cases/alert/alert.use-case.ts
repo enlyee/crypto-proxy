@@ -85,8 +85,8 @@ export class AlertUseCase {
 
       const paddedAddress =
         '0x' + '0'.repeat(66 - wallet.length) + wallet.slice(2);
-      logsWallets.push(paddedAddress);
-      txWallets.push(wallet);
+      logsWallets.push(`'` + paddedAddress + `'`);
+      txWallets.push(`'` + wallet + `'`);
     });
 
     const txWalletsString = 'tx_to in (' + txWallets.join(', ') + ')';
